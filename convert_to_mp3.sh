@@ -13,7 +13,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-TMP_DIR=/tmp
+TMP_DIR=/var/tmp/crond
 
 for TARGET_DIR in ${argv}
 do
@@ -46,8 +46,9 @@ do
     id3="${TMP_DIR}/$serial.id3"
 
     echo "Converting: $i.m4a -> $i.mp3"
-    faad -o "${TMP_DIR}/$serial.wav" "$i.m4a" 2> ${TMP_DIR}/xxx || continue
+    mp4info "$i.m4a" "$i.m4a" 2> ${TMP_DIR}/xxx || continue
     mv ${TMP_DIR}/xxx "$id3" || continue
+    ffmpeg -i "$i.m4a" "${TMP_DIR}/$serial.wav" || continue
 
     title=`grep ^title: "$id3" | sed 's/^title: //' | nkf -Ws`
     album=`grep ^album: "$id3" | sed 's/^album: //' | nkf -Ws`
@@ -84,7 +85,7 @@ do
     album=`grep "ALBUM=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
     mydate=`grep "DATE=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
     track=`grep "TRACK=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
-    album_artist=`grep "ARTIST=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
+    album_artist=`grep "ARTIST=" "$id3" | cut -d '=' -f 2-3 | nkf -Ws`
 
     comment="Setting id3 tag info. Artist: [$album_artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
 
@@ -131,7 +132,7 @@ done
 ## delete txt
 rm -f ${TMP_DIR}/*.id3
 rm -f ${TMP_DIR}/*.wav
-#find "${TARGET_DIR}" -name *.txt -exec rm -f {} \;
-#find "${TARGET_DIR}" -name *.url -exec rm -f {} \;
-#find "${TARGET_DIR}" -name "Thumbs.db" -exec rm -f {} \;
-#find "${TARGET_DIR}" -name ".DS_store" -exec rm -Rf {} \;
+find "${TARGET_DIR}" -name *.txt -exec rm -f {} \;
+find "${TARGET_DIR}" -name *.url -exec rm -f {} \;
+find "${TARGET_DIR}" -name "Thumbs.db" -exec rm -f {} \;
+find "${TARGET_DIR}" -name ".DS_store" -exec rm -Rf {} \;
