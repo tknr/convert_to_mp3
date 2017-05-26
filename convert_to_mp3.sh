@@ -46,20 +46,25 @@ do
     id3="${TMP_DIR}/$serial.id3"
 
     echo "Converting: $i.m4a -> $i.mp3"
-    mp4info "$i.m4a" "$i.m4a" 2> ${TMP_DIR}/xxx || continue
+    mp4info "$i.m4a" > ${TMP_DIR}/xxx || continue
     mv ${TMP_DIR}/xxx "$id3" || continue
+    cat "$id3"
+
     ffmpeg -i "$i.m4a" "${TMP_DIR}/$serial.wav" || continue
 
-    title=`grep ^title: "$id3" | sed 's/^title: //' | nkf -Ws`
-    album=`grep ^album: "$id3" | sed 's/^album: //' | nkf -Ws`
-    mydate=`grep ^date: "$id3" | sed 's/^date: //' | nkf -Ws`
-    track=`grep ^track: "$id3" | sed 's/^track: //' | nkf -Ws`
-    album_artist=`grep ^artist: "$id3" | sed 's/^album_artist: //' | sed 's/^artist: //' | nkf -Ws`
+    title=`grep "^ Metadata Name:" "$id3" | sed 's/^ Metadata Name: //' | nkf -Ws`
+    album=`grep "^ Metadata Album:" "$id3" | sed 's/^ Metadata Album: //' | nkf -Ws`
+    mydate=`grep "^ Metadata Year:" "$id3" | sed 's/^ Metadata Year: //' | nkf -Ws`
+    track=`grep "^ Metadata track:" "$id3" | sed 's/^ Metadata track: //' | cut -d " " -f 1`
+    artist=`grep "^ Metadata Artist:" "$id3" | sed 's/^ Metadata Artist: //' | nkf -Ws`
+    genre=`grep "^ Metadata Genre:" "$id3" | sed 's/^ Metadata Genre: //' | nkf -Ws`
+    comment=`grep "^ Metadata Grouping:" "$id3" | sed 's/^ Metadata Grouping: //' | nkf -Ws`
 
-    comment="Setting id3 tag info. Artist: [$album_artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
+    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
+    echo $tags
 
-    echo $comment | nkf -Sw
-    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$album_artist" --tl "$album" --ty "$mydate" --tn "$track" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc ${comment}"" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+
     rm -f "$id3"
     rm -f "${TMP_DIR}/$serial.wav"
     rm -f "${FILENAME}"
@@ -80,17 +85,21 @@ do
     flac -F -d "${FILENAME}" -o "${TMP_DIR}/${serial}.wav" || continue
     metaflac --list "$i.flac" > ${TMP_DIR}/xxx || continue
     mv ${TMP_DIR}/xxx "$id3"
+    cat "$id3"
 
-    title=`grep "TITLE=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
-    album=`grep "ALBUM=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
-    mydate=`grep "DATE=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
-    track=`grep "TRACK=" "$id3" | cut -d '=' -f 2 | nkf -Ws`
-    album_artist=`grep "ARTIST=" "$id3" | cut -d '=' -f 2-3 | nkf -Ws`
+    # get the tags
+    artist=$(metaflac "$a" --show-tag=ARTIST | sed s/.*=//g)
+    title=$(metaflac "$a" --show-tag=TITLE | sed s/.*=//g)
+    album=$(metaflac "$a" --show-tag=ALBUM | sed s/.*=//g)
+    genre=$(metaflac "$a" --show-tag=GENRE | sed s/.*=//g)
+    track=$(metaflac "$a" --show-tag=TRACKNUMBER | sed s/.*=//g)
+    mydate=$(metaflac "$a" --show-tag=DATE | sed s/.*=//g)
 
-    comment="Setting id3 tag info. Artist: [$album_artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
+    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
+    echo $tags
 
-    echo $comment | nkf -Sw
-    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$album_artist" --tl "$album" --ty "$mydate" --tn "$track" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+
     rm -f "$id3"
     rm -f "${TMP_DIR}/${serial}.wav"
     rm -f "${FILENAME}"
