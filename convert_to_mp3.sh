@@ -106,6 +106,43 @@ do
 
 done
 
+## dsf2mp3
+for FILENAME in `find "${TARGET_DIR}" -name "*.dsf" | sort`
+do
+
+	echo "${FILENAME}"
+
+	i=${FILENAME%%.dsf}
+	serial=`uuidgen`
+	id3="${TMP_DIR}/${serial}.id3"
+
+	ffmpeg -i ${FILENAME} "${TMP_DIR}/$serial.wav" || continue
+
+	echo "Converting: ${FILENAME} -> $i.mp3"
+	ffmpeg -i ${FILENAME} > ${TMP_DIR}/xxx 2>&1
+	mv ${TMP_DIR}/xxx "$id3"
+	cat "$id3" || continue
+
+	## get the tags
+	title=`grep "^    title           : " "$id3" | sed 's/^    title           : //' | nkf -Ws`
+	album=`grep "^    album           : " "$id3" | sed 's/^    album           : //' | nkf -Ws`
+	mydate=`grep "^    date            : " "$id3" | sed 's/^    date            : //' | cut -d "-" -f 1 | nkf -Ws`
+	track=`grep "^    track           : " "$id3" | sed 's/    track           : //' | nkf -Ws`
+	artist=`grep "^    artist          : " "$id3" | sed 's/^    artist          : //' | nkf -Ws`
+	comment=`grep "^      comment         : " "$id3" | sed 's/^      comment         : //' | nkf -Ws`
+
+	tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Comment: [$comment]"
+	echo $tags
+	
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+
+	rm -f "$id3"
+	rm -f "${TMP_DIR}/$serial.wav"
+	rm -f "${FILENAME}"
+
+done
+
+
 ## aif2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.aif" | sort`
 do
