@@ -88,12 +88,12 @@ do
     cat "$id3"
 
     # get the tags
-    artist=$(metaflac "$a" --show-tag=ARTIST | sed s/.*=//g)
-    title=$(metaflac "$a" --show-tag=TITLE | sed s/.*=//g)
-    album=$(metaflac "$a" --show-tag=ALBUM | sed s/.*=//g)
-    genre=$(metaflac "$a" --show-tag=GENRE | sed s/.*=//g)
-    track=$(metaflac "$a" --show-tag=TRACKNUMBER | sed s/.*=//g)
-    mydate=$(metaflac "$a" --show-tag=DATE | sed s/.*=//g)
+    artist=$(cat "$id3" | grep ARTIST | cut -d "=" -f 2 | sed s/.*=//g)
+    title=$(cat "$id3" | grep TITLE | cut -d "=" -f 2 | sed s/.*=//g)
+    album=$(cat "$id3" | grep ALBUM | cut -d "=" -f 2 | sed s/.*=//g)
+    genre=$(cat "$id3" | grep GENRE | cut -d "=" -f 2 | sed s/.*=//g)
+    track=$(cat "$id3" | grep TRACKNUMBER | cut -d "=" -f 2 | sed s/.*=//g)
+    mydate=$(cat "$id3" | grep DATE | cut -d "=" -f 2 | sed s/.*=//g)
 
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
     echo $tags
