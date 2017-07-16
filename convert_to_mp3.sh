@@ -83,17 +83,24 @@ do
 
     echo "Converting: $i.flac -> $i.mp3"
     flac -F -d "${FILENAME}" -o "${TMP_DIR}/${serial}.wav" || continue
-    metaflac --list "$i.flac" > ${TMP_DIR}/xxx || continue
-    mv ${TMP_DIR}/xxx "$id3"
-    cat "$id3"
+    #metaflac --list "$i.flac"  | grep "comment\[" | cut -d ":" -f 2 | cut -d " " -f 2- > ${TMP_DIR}/xxx || continue
+    #mv ${TMP_DIR}/xxx "$id3"
+    #cat "$id3"
 
     # get the tags
-    artist=$(cat "$id3" | grep ARTIST | cut -d "=" -f 2 | sed s/.*=//g)
-    title=$(cat "$id3" | grep TITLE | cut -d "=" -f 2 | sed s/.*=//g)
-    album=$(cat "$id3" | grep ALBUM | cut -d "=" -f 2 | sed s/.*=//g)
-    genre=$(cat "$id3" | grep GENRE | cut -d "=" -f 2 | sed s/.*=//g)
-    track=$(cat "$id3" | grep TRACKNUMBER | cut -d "=" -f 2 | sed s/.*=//g)
-    mydate=$(cat "$id3" | grep DATE | cut -d "=" -f 2 | sed s/.*=//g)
+    #artist=$(cat "$id3" | grep ARTIST | cut -d "=" -f 2 | sed s/.*=//g)
+    #title=$(cat "$id3" | grep TITLE | cut -d "=" -f 2 | sed s/.*=//g)
+    #album=$(cat "$id3" | grep ALBUM | cut -d "=" -f 2 | sed s/.*=//g)
+    #genre=$(cat "$id3" | grep GENRE | cut -d "=" -f 2 | sed s/.*=//g)
+    #track=$(cat "$id3" | grep TRACKNUMBER | cut -d "=" -f 2 | sed s/.*=//g)
+    #mydate=$(cat "$id3" | grep DATE | cut -d "=" -f 2 | sed s/.*=//g)
+
+    artist=$(metaflac "${FILENAME}" --show-tag=ARTIST | sed s/.*=//g)
+    title=$(metaflac "${FILENAME}" --show-tag=TITLE | sed s/.*=//g)
+    album=$(metaflac "${FILENAME}" --show-tag=ALBUM | sed s/.*=//g)
+    genre=$(metaflac "${FILENAME}" --show-tag=GENRE | sed s/.*=//g)
+    track=$(metaflac "${FILENAME}" --show-tag=TRACKNUMBER | sed s/.*=//g)
+    mydate=$(metaflac "${FILENAME}" --show-tag=DATE | sed s/.*=//g)
 
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
     echo $tags
