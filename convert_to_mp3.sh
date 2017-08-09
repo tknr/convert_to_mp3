@@ -52,13 +52,13 @@ do
 
     ffmpeg -i "$i.m4a" "${TMP_DIR}/$serial.wav" || continue
 
-    title=`grep "^ Metadata Name:" "$id3" | sed 's/^ Metadata Name: //' | nkf -Ws`
-    album=`grep "^ Metadata Album:" "$id3" | sed 's/^ Metadata Album: //' | nkf -Ws`
-    mydate=`grep "^ Metadata Year:" "$id3" | sed 's/^ Metadata Year: //' | nkf -Ws`
+    title=`grep "^ Metadata Name:" "$id3" | sed 's/^ Metadata Name: //'`
+    album=`grep "^ Metadata Album:" "$id3" | sed 's/^ Metadata Album: //'`
+    mydate=`grep "^ Metadata Year:" "$id3" | sed 's/^ Metadata Year: //'`
     track=`grep "^ Metadata track:" "$id3" | sed 's/^ Metadata track: //' | cut -d " " -f 1`
-    artist=`grep "^ Metadata Artist:" "$id3" | sed 's/^ Metadata Artist: //' | nkf -Ws`
-    genre=`grep "^ Metadata Genre:" "$id3" | sed 's/^ Metadata Genre: //' | nkf -Ws`
-    comment=`grep "^ Metadata Grouping:" "$id3" | sed 's/^ Metadata Grouping: //' | nkf -Ws`
+    artist=`grep "^ Metadata Artist:" "$id3" | sed 's/^ Metadata Artist: //'`
+    genre=`grep "^ Metadata Genre:" "$id3" | sed 's/^ Metadata Genre: //'`
+    comment=`grep "^ Metadata Grouping:" "$id3" | sed 's/^ Metadata Grouping: //'`
 
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
     echo $tags
