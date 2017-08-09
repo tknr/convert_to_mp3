@@ -83,17 +83,6 @@ do
 
     echo "Converting: $i.flac -> $i.mp3"
     flac -F -d "${FILENAME}" -o "${TMP_DIR}/${serial}.wav" || continue
-    #metaflac --list "$i.flac"  | grep "comment\[" | cut -d ":" -f 2 | cut -d " " -f 2- > ${TMP_DIR}/xxx || continue
-    #mv ${TMP_DIR}/xxx "$id3"
-    #cat "$id3"
-
-    # get the tags
-    #artist=$(cat "$id3" | grep ARTIST | cut -d "=" -f 2 | sed s/.*=//g)
-    #title=$(cat "$id3" | grep TITLE | cut -d "=" -f 2 | sed s/.*=//g)
-    #album=$(cat "$id3" | grep ALBUM | cut -d "=" -f 2 | sed s/.*=//g)
-    #genre=$(cat "$id3" | grep GENRE | cut -d "=" -f 2 | sed s/.*=//g)
-    #track=$(cat "$id3" | grep TRACKNUMBER | cut -d "=" -f 2 | sed s/.*=//g)
-    #mydate=$(cat "$id3" | grep DATE | cut -d "=" -f 2 | sed s/.*=//g)
 
     artist=$(metaflac "${FILENAME}" --show-tag=ARTIST | sed s/.*=//g)
     title=$(metaflac "${FILENAME}" --show-tag=TITLE | sed s/.*=//g)
@@ -131,12 +120,12 @@ do
 	cat "$id3" || continue
 
 	## get the tags
-	title=`grep "^    title           : " "$id3" | sed 's/^    title           : //' | nkf -Ws`
-	album=`grep "^    album           : " "$id3" | sed 's/^    album           : //' | nkf -Ws`
-	mydate=`grep "^    date            : " "$id3" | sed 's/^    date            : //' | cut -d "-" -f 1 | nkf -Ws`
-	track=`grep "^    track           : " "$id3" | sed 's/    track           : //' | nkf -Ws`
-	artist=`grep "^    artist          : " "$id3" | sed 's/^    artist          : //' | nkf -Ws`
-	comment=`grep "^      comment         : " "$id3" | sed 's/^      comment         : //' | nkf -Ws`
+	title=`grep "^    title           : " "$id3" | sed 's/^    title           : //'`
+	album=`grep "^    album           : " "$id3" | sed 's/^    album           : //'`
+	mydate=`grep "^    date            : " "$id3" | sed 's/^    date            : //' | cut -d "-" -f 1`
+	track=`grep "^    track           : " "$id3" | sed 's/    track           : //'`
+	artist=`grep "^    artist          : " "$id3" | sed 's/^    artist          : //'`
+	comment=`grep "^      comment         : " "$id3" | sed 's/^      comment         : //'`
 
 	tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Comment: [$comment]"
 	echo $tags
