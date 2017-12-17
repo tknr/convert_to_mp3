@@ -1,3 +1,3 @@
 #!/bin/bash
-ln -s `pwd`/upconvert_mp3.sh /usr/local/bin/upconvert_mp3
+ln -s `pwd`/convert_to_mp3.sh /usr/local/bin/convert_to_mp3
 
