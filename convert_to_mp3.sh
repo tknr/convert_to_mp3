@@ -178,8 +178,6 @@ done
 done
 
 ## delete txt
-rm -f ${TMP_DIR}/*.id3
-rm -f ${TMP_DIR}/*.wav
 find "${TARGET_DIR}" -name *.txt -exec rm -f {} \;
 find "${TARGET_DIR}" -name *.url -exec rm -f {} \;
 find "${TARGET_DIR}" -name "Thumbs.db" -exec rm -f {} \;
