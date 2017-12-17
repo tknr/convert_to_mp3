@@ -13,17 +13,18 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-LAME_OPTION="-h -q 0 --preset insane --highpass -1 --lowpass -1"
 TMP_DIR=/var/tmp/crond
 
-for TARGET_DIR in ${argv}
+for ARG_DIR in ${argv}
 do
+
+TARGET_DIR=`readlink -f ${ARG_DIR}`
 
 ## wav2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.wav" | sort`
 do
 	echo "${FILENAME}"
-	lame ${LAME_OPTION} "${FILENAME}" "${FILENAME%%.wav}.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.wav}.mp3" || continue
 	rm -f "${FILENAME}" || continue
 done
 
@@ -64,7 +65,7 @@ do
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
     echo $tags
 
-    lame ${LAME_OPTION} --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc ${comment}"" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
     rm -f "$id3"
     rm -f "${TMP_DIR}/$serial.wav"
@@ -95,7 +96,7 @@ do
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
     echo $tags
 
-    lame ${LAME_OPTION} --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
     rm -f "$id3"
     rm -f "${TMP_DIR}/${serial}.wav"
@@ -131,7 +132,7 @@ do
 	tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Comment: [$comment]"
 	echo $tags
 	
-	lame ${LAME_OPTION} --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
 	rm -f "$id3"
 	rm -f "${TMP_DIR}/$serial.wav"
@@ -145,7 +146,7 @@ for FILENAME in `find "${TARGET_DIR}" -name "*.aif" | sort`
 do
 	echo "${FILENAME}"
 	i=${FILENAME%%.aif}
-	lame ${LAME_OPTION} "${FILENAME}" "${FILENAME%%.aif}.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.aif}.mp3" || continue
 	rm -f "${FILENAME}"
 done
 
@@ -154,7 +155,7 @@ for FILENAME in `find "${TARGET_DIR}" -name "*.aiff" | sort`
 do
     echo "${FILENAME}"
     i=${FILENAME%%.aiff}
-    lame ${LAME_OPTION} "${FILENAME}" "${FILENAME%%.aiff}.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.aiff}.mp3" || continue
     rm -f "${FILENAME}"
 done
 
@@ -165,7 +166,7 @@ do
     i=${FILENAME%%.mpc}
     serial=`uuidgen`
     mpcdec "${FILENAME}" "${TMP_DIR}/${serial}.wav" || continue
-    lame ${LAME_OPTION} "${TMP_DIR}/${serial}.wav" "${i}.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${TMP_DIR}/${serial}.wav" "${i}.mp3" || continue
     rm -f "${TMP_DIR}/${serial}.wav"
     rm -f "${FILENAME}"
 done
