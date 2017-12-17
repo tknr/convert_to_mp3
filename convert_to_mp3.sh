@@ -17,7 +17,7 @@ if [ ${_pcnt} -gt 1 ]; then
   exit 1
 fi
 
-TMP_DIR=/var/tmp/crond
+TMP_DIR=/tmp
 
 for ARG_DIR in ${argv}
 do
