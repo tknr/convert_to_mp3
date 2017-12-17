@@ -1,8 +1,5 @@
 #!/bin/bash
 export IFS=$'\n'
-DIR=$(cd $(dirname $0); pwd)
-cd $DIR
-source ./lock.sh
 
 DATE=`date +%Y_%m_%d`
 argv=("$@")
@@ -11,6 +8,13 @@ CMDNAME=`basename $0`
 if [ $# -eq 0 ]; then
     echo "Usage : ${CMDNAME} [dirname]"
     exit 1
+fi
+
+## https://qiita.com/hit/items/e95298f689a1ee70ae4a
+_pcnt=`pgrep -fo ${CMDNAME} | wc -l`
+if [ ${_pcnt} -gt 1 ]; then
+	echo "This script has been running now. proc : ${_pcnt}"
+  exit 1
 fi
 
 TMP_DIR=/var/tmp/crond
