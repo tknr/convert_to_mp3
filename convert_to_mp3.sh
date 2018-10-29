@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 export IFS=$'\n'
 
 DATE=`date +%Y_%m_%d`
@@ -69,7 +69,7 @@ do
     tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
     echo $tags
 
-    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+   lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
     rm -f "$id3"
     rm -f "${TMP_DIR}/$serial.wav"
@@ -84,26 +84,30 @@ do
     echo "${FILENAME}"
 
     i=${FILENAME%%.flac}
-    serial=`uuidgen` 
-    id3="${TMP_DIR}/${serial}.id3"
+#    serial=`uuidgen` 
+#    id3="${TMP_DIR}/${serial}.id3"
 
     echo "Converting: $i.flac -> $i.mp3"
-    flac -F -d "${FILENAME}" -o "${TMP_DIR}/${serial}.wav" || continue
 
-    artist=$(metaflac "${FILENAME}" --show-tag=ARTIST | sed s/.*=//g)
-    title=$(metaflac "${FILENAME}" --show-tag=TITLE | sed s/.*=//g)
-    album=$(metaflac "${FILENAME}" --show-tag=ALBUM | sed s/.*=//g)
-    genre=$(metaflac "${FILENAME}" --show-tag=GENRE | sed s/.*=//g)
-    track=$(metaflac "${FILENAME}" --show-tag=TRACKNUMBER | sed s/.*=//g)
-    mydate=$(metaflac "${FILENAME}" --show-tag=DATE | sed s/.*=//g)
+    sox -S -G "${FILENAME}" -C 320 -r 48000 ${i}.mp3 || continue
+    soxi ${i}.mp3
 
-    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
-    echo $tags
+#    flac -F -d "${FILENAME}" -o "${TMP_DIR}/${serial}.wav" || continue
+#
+#    artist=$(metaflac "${FILENAME}" --show-tag=ARTIST | sed s/.*=//g)
+#    title=$(metaflac "${FILENAME}" --show-tag=TITLE | sed s/.*=//g)
+#    album=$(metaflac "${FILENAME}" --show-tag=ALBUM | sed s/.*=//g)
+#    genre=$(metaflac "${FILENAME}" --show-tag=GENRE | sed s/.*=//g)
+#    track=$(metaflac "${FILENAME}" --show-tag=TRACKNUMBER | sed s/.*=//g)
+#    mydate=$(metaflac "${FILENAME}" --show-tag=DATE | sed s/.*=//g)
 
-    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+#    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track]"
+#    echo $tags
 
-    rm -f "$id3"
-    rm -f "${TMP_DIR}/${serial}.wav"
+#    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+
+#    rm -f "$id3"
+#    rm -f "${TMP_DIR}/${serial}.wav"
     rm -f "${FILENAME}"
 
 done
