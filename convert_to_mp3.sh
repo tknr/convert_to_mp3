@@ -48,28 +48,31 @@ do
     echo "${FILENAME}"
 
     i=${FILENAME%%.m4a}
-    serial=`uuidgen`
-    id3="${TMP_DIR}/$serial.id3"
+#    serial=`uuidgen`
+#    id3="${TMP_DIR}/$serial.id3"
 
     echo "Converting: $i.m4a -> $i.mp3"
-    mp4info "$i.m4a" > ${TMP_DIR}/xxx || continue
-    mv ${TMP_DIR}/xxx "$id3" || continue
-    cat "$id3"
 
-    ffmpeg -i "$i.m4a" "${TMP_DIR}/$serial.wav" || continue
+    ffmpeg -i "${i}.m4a" "${i}.mp3" || continue
 
-    title=`grep "^ Metadata Name:" "$id3" | sed 's/^ Metadata Name: //'`
-    album=`grep "^ Metadata Album:" "$id3" | sed 's/^ Metadata Album: //'`
-    mydate=`grep "^ Metadata Year:" "$id3" | sed 's/^ Metadata Year: //'`
-    track=`grep "^ Metadata track:" "$id3" | sed 's/^ Metadata track: //' | cut -d " " -f 1`
-    artist=`grep "^ Metadata Artist:" "$id3" | sed 's/^ Metadata Artist: //'`
-    genre=`grep "^ Metadata Genre:" "$id3" | sed 's/^ Metadata Genre: //'`
-    comment=`grep "^ Metadata Grouping:" "$id3" | sed 's/^ Metadata Grouping: //'`
+#    mp4info "$i.m4a" > ${TMP_DIR}/xxx || continue
+#    mv ${TMP_DIR}/xxx "$id3" || continue
+#    cat "$id3"
 
-    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
-    echo $tags
+#    ffmpeg -i "$i.m4a" "${TMP_DIR}/$serial.wav" || continue
 
-   lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+#    title=`grep "^ Metadata Name:" "$id3" | sed 's/^ Metadata Name: //'`
+#    album=`grep "^ Metadata Album:" "$id3" | sed 's/^ Metadata Album: //'`
+#    mydate=`grep "^ Metadata Year:" "$id3" | sed 's/^ Metadata Year: //'`
+#    track=`grep "^ Metadata track:" "$id3" | sed 's/^ Metadata track: //' | cut -d " " -f 1`
+#    artist=`grep "^ Metadata Artist:" "$id3" | sed 's/^ Metadata Artist: //'`
+#    genre=`grep "^ Metadata Genre:" "$id3" | sed 's/^ Metadata Genre: //'`
+#    comment=`grep "^ Metadata Grouping:" "$id3" | sed 's/^ Metadata Grouping: //'`
+
+#    tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Genre: [$genre] Comment: [$comment]"
+#    echo $tags
+
+#   lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tg "${genre:-12}" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
     rm -f "$id3"
     rm -f "${TMP_DIR}/$serial.wav"
