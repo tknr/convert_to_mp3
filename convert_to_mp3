@@ -34,7 +34,7 @@ done
 ## ogg2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.ogg" | sort`
 do
-	ffmpeg -y -i "${FILENAME}" -ab 320k -map_metadata 0:s:0 -id3v2_version 3 -write_id3v1 1 "${FILENAME/.ogg/.mp3}" || continue
+	ffmpeg -y -i "${FILENAME}" -vn -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME/.ogg/.mp3}" || continue
 	rm -f "${FILENAME}" || continue
 done
 
@@ -42,21 +42,21 @@ done
 ## m4a2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.m4a" | sort`
 do
-    ffmpeg -y -i "${FILENAME}" "${FILENAME%%.m4a}.mp3" || continue
-    rm -f "${FILENAME}" || continue
+	ffmpeg -y -i "${FILENAME}" -vn -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.m4a}.mp3" || continue
+	rm -f "${FILENAME}" || continue
 done
 
 ## flac2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.flac" | sort`
 do
-    sox -S -G "${FILENAME}" -C 320 -r 48000 ${FILENAME%.flac}.mp3 || continue
+    ffmpeg -y -i "${FILENAME}" -vn -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.flac}.mp3" || continue
     rm -f "${FILENAME}"
 done
 
 ## alac2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.alac" | sort`
 do
-    sox -S -G "${FILENAME}" -C 320 -r 48000 ${FILENAME%%.alac}.mp3 || continue
+    ffmpeg -y -i "${FILENAME}" -vn -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.alac}.mp3" || continue
     rm -f "${FILENAME}" || continue
 done
 
