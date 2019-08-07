@@ -18,8 +18,6 @@ if [ ${_pcnt} -gt 1 ]; then
 fi
 
 THREADS=$(( (`cat /proc/cpuinfo | grep processor | wc -l` +1) / 4))
-FFMPEG_OPTIONS=" -vn  -threads ${THREADS} -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3"
-LAME_OPTIONS="-h -q 0 --preset insane --highpass -1 --lowpass -1"
 TMP_DIR=/tmp
 
 for ARG_DIR in ${argv}
@@ -30,14 +28,14 @@ TARGET_DIR=`readlink -f ${ARG_DIR}`
 ## wav2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.wav" | sort`
 do
-	lame ${LAME_OPTIONS} "${FILENAME}" "${FILENAME%%.wav}.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.wav}.mp3" || continue
 	rm -f "${FILENAME}" || continue
 done
 
 ## ogg2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.ogg" | sort`
 do
-	ffmpeg -y -i "${FILENAME}" ${FFMPEG_OPTIONS} "${FILENAME/.ogg/.mp3}" || continue
+	ffmpeg -y -i "${FILENAME}" -vn -threads ${THREADS} -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME/.ogg/.mp3}" || continue
 	rm -f "${FILENAME}" || continue
 done
 
@@ -45,21 +43,21 @@ done
 ## m4a2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.m4a" | sort`
 do
-	ffmpeg -y -i "${FILENAME}" ${FFMPEG_OPTIONS} "${FILENAME%%.m4a}.mp3" || continue
+	ffmpeg -y -i "${FILENAME}" -vn -threads ${THREADS} -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.m4a}.mp3" || continue
 	rm -f "${FILENAME}" || continue
 done
 
 ## flac2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.flac" | sort`
 do
-    ffmpeg -y -i "${FILENAME}" ${FFMPEG_OPTIONS} "${FILENAME%%.flac}.mp3" || continue
+    ffmpeg -y -i "${FILENAME}" -vn -threads ${THREADS} -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.flac}.mp3" || continue
     rm -f "${FILENAME}"
 done
 
 ## alac2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.alac" | sort`
 do
-    ffmpeg -y -i "${FILENAME}" ${FFMPEG_OPTIONS} "${FILENAME%%.alac}.mp3" || continue
+    ffmpeg -y -i "${FILENAME}" -vn -threads ${THREADS} -ar 48000 -ab 320k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.alac}.mp3" || continue
     rm -f "${FILENAME}" || continue
 done
 
@@ -91,7 +89,7 @@ do
 	tags="Setting id3 tag info. Artist: [$artist] Album: [$album] Title: [$title] Year: [$mydate] Track: [$track] Comment: [$comment]"
 	echo $tags
 	
-	lame ${LAME_OPTIONS} --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 --add-id3v2 --tt "$title" --ta "$artist" --tl "$album" --ty "$mydate" --tn "$track" --tc "${comment}" "${TMP_DIR}/$serial.wav" "$i.mp3" || continue
 
 	rm -f "$id3"
 	rm -f "${TMP_DIR}/$serial.wav"
@@ -103,14 +101,14 @@ done
 ## aif2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.aif" | sort`
 do
-	lame ${LAME_OPTIONS} "${FILENAME}" "${FILENAME%%.aif}.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.aif}.mp3" || continue
 	rm -f "${FILENAME}" || continue
 done
 
 ## aiff2mp3
 for FILENAME in `find "${TARGET_DIR}" -name "*.aiff" | sort`
 do
-	lame ${LAME_OPTIONS} "${FILENAME}" "${FILENAME%%.aiff}.mp3" || continue
+	lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${FILENAME}" "${FILENAME%%.aiff}.mp3" || continue
 	rm -f "${FILENAME}" || continue
 done
 
@@ -121,7 +119,7 @@ do
     i=${FILENAME%%.mpc}
     serial=`uuidgen`
     mpcdec "${FILENAME}" "${TMP_DIR}/${serial}.wav" || continue
-    lame ${LAME_OPTIONS} "${TMP_DIR}/${serial}.wav" "${i}.mp3" || continue
+    lame -h -q 0 --preset insane --highpass -1 --lowpass -1 "${TMP_DIR}/${serial}.wav" "${i}.mp3" || continue
     rm -f "${TMP_DIR}/${serial}.wav"
     rm -f "${FILENAME}"
 done
