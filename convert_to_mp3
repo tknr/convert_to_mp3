@@ -53,14 +53,12 @@ do
 	## flac2mp3
 	for FILENAME in `find "${TARGET_DIR}" -name "*.flac" | sort`
 	do
-#		nice -n ${NICE} sox -S -G "${FILENAME}" -C ${BITRATE}.01 -r ${FREQUENCY} "${FILENAME%%.flac}.mp3" || continue
-		nice -n ${NICE} ffmpeg  -hide_banner -y -i "${FILENAME}" -threads ${THREADS} -ar ${FREQUENCY} -ab ${BITRATE}k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.m4a}.mp3" || continue
+		nice -n ${NICE} sox -S -G "${FILENAME}" -C ${BITRATE}.01 -r ${FREQUENCY} "${FILENAME%%.flac}.mp3" || continue
 		rm -f "${FILENAME}"
 	done
         for FILENAME in `find "${TARGET_DIR}" -name "*.FLAC" | sort`
         do
-#                nice -n ${NICE} sox -S -G "${FILENAME}" -C ${BITRATE}.01 -r ${FREQUENCY} "${FILENAME%%.FLAC}.mp3" || continue
-		nice -n ${NICE} ffmpeg  -hide_banner -y -i "${FILENAME}" -threads ${THREADS} -ar ${FREQUENCY} -ab ${BITRATE}k  -map_metadata 0 -id3v2_version 3 "${FILENAME%%.m4a}.mp3" || continue
+                nice -n ${NICE} sox -S -G "${FILENAME}" -C ${BITRATE}.01 -r ${FREQUENCY} "${FILENAME%%.FLAC}.mp3" || continue
                 rm -f "${FILENAME}"
         done
 
